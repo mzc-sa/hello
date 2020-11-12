@@ -48,9 +48,7 @@ Amazon EKS는 Amazon VPC 네트워크 정책을 사용하여 제어 플레인 �
           Amazon EKS 노드를 자동으로 구성하는 AWS CloudFormation 템플릿이 제공됩니다
           만약 노드를 관리할 필요가 없는 경우는 AWS Fargete에 애플리케이션을 배포할 수 있습니다.
 
-   1.3. 클러스터가 준비되었다면, 너는 Kubernetes도구(kubectl)를 통해서 클러스터와 통신할 수
-
-          있습니다.
+   1.3. 클러스터가 준비되었다면, 너는 Kubernetes도구(kubectl)를 통해서 클러스터와 통신할 수 있습니다.
 
    1.4. 다른 Kubernetes환경에서와 같이 EKS 클러스터에 애플리케이션을 배포 및 관리가 가능합니다.
 
@@ -310,8 +308,5 @@ kubectl apply -f [https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.
 
 해당 단원은 추후 정리한다.
 
----
-
----
 
 **END**
