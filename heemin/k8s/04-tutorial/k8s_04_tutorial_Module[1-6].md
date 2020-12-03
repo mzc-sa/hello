@@ -1,4 +1,4 @@
-# k8s_04_tutorial_test.md
+# [협력]쿠버네티스 기초 학습
 
 # 쿠버네티스 기초 학습
 
@@ -9,6 +9,8 @@
 [Hello Minikube](https://kubernetes.io/ko/docs/tutorials/hello-minikube/)
 
 - 링크를 클릭한 후, Launch Termainal 클릭 (start.sh 실행)
+
+<br/>
 
 ### 과정
 
@@ -228,7 +230,9 @@ $ minikube delete
 
 - 대시보드
 
-    ![k8s_04_tutorial_test%20md%202953ca8e318842d98e8082a51f2399cb/Untitled.png](k8s_04_tutorial_test%20md%202953ca8e318842d98e8082a51f2399cb/Untitled.png)
+    ![k8s_04_tutorial_Module[1-6]_images/Untitled.png](k8s_04_tutorial_Module[1-6]_images/Untitled.png)
+
+<br/>
 
 # 1. 클러스터 생성하기
 
@@ -258,6 +262,8 @@ $ minikube delete
 노드:
 
 클러스터 내 워커 머신 + kubelet 에이전트(마스터와 통신용) + 제공 받은 API로 마스터와 통신
+
+<br/>
 
 ## 1. Module 1 - Create a Kubernetes cluster
 
@@ -315,6 +321,8 @@ minikube   Ready    master   9m45s   v1.17.3
 
 ```
 
+<br/>
+
 # 2. 앱 배포하기
 
 ## 2. kubectl을 사용해서 디플로이먼트 생성하기
@@ -340,6 +348,8 @@ minikube   Ready    master   9m45s   v1.17.3
 - kubectl은 클러스터와 상호 작용하기 위해 쿠버네티스 API를 사용한다.
 - 디플로이먼트를 생성할 때, 애플리케이션에 대한 컨테이너 이미지와 구동시키고자 하는 복제 수 지정 필요
 - 첫 번째 디플로이먼트로, 도커 컨테이너로 패키지된 Node.js 애플리케이션을 사용
+
+<br/>
 
 ## 2. Module 2 - Deploy an App (앱 배포하기)
 
@@ -405,6 +415,8 @@ Name of the Pod: kubernetes-bootcamp-69fbc6f4cf-zfb5v
 
 ```
 
+<br/>
+
 # 3. 앱 조사하기
 
 ## 3. 파드와 노드 보기
@@ -434,7 +446,7 @@ Deployment를 생성했을 때, 쿠버네티스는 애플리케이션 인스턴�
 - 파드는 언제나 노드 상에서 동작
 - 하나의 노드는 여러 개의 파드를 가질 수 있으며 쿠버네티스 마스터는 클러스터 내 노드를 통해서 파드에 대한 스케쥴링을 자동으로 처리
 
-![k8s_04_tutorial_test%20md%202953ca8e318842d98e8082a51f2399cb/Untitled%201.png](k8s_04_tutorial_test%20md%202953ca8e318842d98e8082a51f2399cb/Untitled%201.png)
+![k8s_04_tutorial_Module[1-6]_images/Untitled%201.png](k8s_04_tutorial_Module[1-6]_images/Untitled%201.png)
 
 ### kubectl로 문제 해결하기
 
@@ -442,6 +454,8 @@ Deployment를 생성했을 때, 쿠버네티스는 애플리케이션 인스턴�
 - kubectl describe : 자원에 대한 상세한 정보 확인
 - kubectl logs : 파드 내 컨테이너의 로그 출력
 - kubectl exec : 파드 내 컨테이너에 대한 명령 실행
+
+<br/>
 
 ## 3. Module 3 - 앱 조사하기 (Explore your app)
 
@@ -588,6 +602,573 @@ $
 
 ```
 
+<br/>
+
 # 4. 앱 외부로 노출하기
 
 ## 4. 앱 노출을 위해 서비스 이용하기
+
+[앱 노출을 위해 서비스 이용하기](https://kubernetes.io/ko/docs/tutorials/kubernetes-basics/expose/expose-intro/)
+
+### 목표
+
+- 쿠버네티스의 서비스에 대해 배운다.
+- 레이블과 레이블셀랙터 오브젝트가 어떻게 서비스와 연관되는지 이해한다.
+- 서비스를 이용하여 쿠버네티스 클러스터 외부로 애플리케이션을 노출한다.
+
+### 쿠버네티스 서비스들에 대한 개요
+
+- 쿠버네티스의 서비스는 하나의 논리적인 파드 셋(set)과 해당 파드들에 접근할 수 있는 정책을 정의 (추상적)
+- 서비스는 종속적인 파드들 사이를 느슨하게 결합 (YAML, JSON을 이용하여 정의)
+- 서비스가 대상으로 하는 파드 셋은 보통 LabelSelector에 의해 결정
+
+ClusterIP(기본값) → NodePort → LoadBalancer + ExternalName
+
+### 서비스와 레이블
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%202.png](k8s_04_tutorial_Module[1-6]_images/Untitled%202.png)
+
+- 서비스는 파드 셋에 걸쳐서 트래픽을 라우트
+- 애플리케이션에 영향을 주지 않으면서 쿠버네티스의 파드들이 죽게도하고 복제가 되게도 해주는 추상적 개념
+- 서비스는 쿠버네티스 객체들에 대해 논리 연산을 허용해주는 기본 그룹핑 단위인, 레이블과 셀렉터를 이용하여 파드 셋과 매치, 레이블은 오브젝트들에게 붙여진 Key : Value 쌍으로 다양한 방식으로 이용 가능
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%203.png](k8s_04_tutorial_Module[1-6]_images/Untitled%203.png)
+
+- 레이블은 오브젝트의 생성 시점 또는 이후 시점에 붙여질 수 있으며 언제든지 수정이 가능
+
+<br/>
+
+## 4. Module 4 - 앱 노출하기 (Expose your app publicly)
+
+- kubectl 명령어를 활용하여 쿠버네티스 어플리케이션을 클러스터 외부로 노출하는 방법 학습
+- kubectl label 명령어를 활용하여 label을 오브젝트에 할당하고 확인하는 방법 학습
+
+```python
+Kubernetes Bootcamp Terminal
+
+$
+$ sleep 1; launch.sh
+Starting Kubernetes. This is expected to take less than a minute
+Kubernetes Started
+
+# Step 1. Create a new service
+
+# 어플리케이션 동작 확인
+$ kubectl get pods    # 어플리케이션 동작 확인
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-765bf4c7b4-2m9p4   1/1     Running   0          2m21s
+
+# 클러스터 서비스 확인
+$ kubectl get services    # 클러스터의 서비스 확인 명령어
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   3m42s
+
+# NodePort를 파라미터로 외부 노출
+$ kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+service/kubernetes-bootcamp exposed
+
+# 클러스터 서비스 확인
+$ kubectl get services
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP          7m38s
+kubernetes-bootcamp   NodePort    10.111.224.255   <none>        8080:30751/TCP   2m47s
+
+# 어떤 포트가 외부로 열렸는지 확인
+$ kubectl describe services/kubernetes-bootcamp
+Name:                     kubernetes-bootcamp
+Namespace:                default
+Labels:                   run=kubernetes-bootcamp
+Annotations:              <none>
+Selector:                 run=kubernetes-bootcamp
+Type:                     NodePort
+IP:                       10.111.224.255
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+NodePort:                 <unset>  30751/TCP
+Endpoints:                172.18.0.4:8080
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+# NODE_PORT 변수 설정
+$ export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+
+$ echo NODE_PORT=$NODE_PORT
+NODE_PORT=30751
+
+$ curl $(minikube ip):$NODE_PORT
+Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-765bf4c7b4-2m9p4 | v=1
+
+# Step 2. Using labels
+
+# Label 확인, Deployment는 파드의 label을 자동 생성
+$ kubectl describe deployment
+Name:                   kubernetes-bootcamp
+Namespace:              default
+CreationTimestamp:      Mon, 16 Nov 2020 01:50:23 +0000
+Labels:                 run=kubernetes-bootcamp
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               run=kubernetes-bootcamp
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  run=kubernetes-bootcamp
+  Containers:
+   kubernetes-bootcamp:
+    Image:        gcr.io/google-samples/kubernetes-bootcamp:v1
+    Port:         8080/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   kubernetes-bootcamp-765bf4c7b4 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  12m   deployment-controller  Scaled up replica set kubernetes-bootcamp-765bf4c7b4 to 1
+
+# 파드 정보 확인 시, -l 옵션을 활용
+$ kubectl get pods -l run=kubernetes-bootcamp
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-765bf4c7b4-2m9p4   1/1     Running   0          12m
+
+# 서비스 정보 확인 시, -l 옵션을 활용
+$ kubectl get services -l run=kubernetes-bootcamp
+NAME                  TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kubernetes-bootcamp   NodePort   10.111.224.255   <none>        8080:30751/TCP   9m7s
+
+# POD_NAME 환경 변수 설정
+$ export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+
+$ echo Name of the Pod: $POD_NAME
+Name of the Pod: kubernetes-bootcamp-765bf4c7b4-2m9p4
+
+# 새로운 label 적용 명령어 [object type, object name, new label]
+$ kubectl label pod $POD_NAME app=v1
+pod/kubernetes-bootcamp-765bf4c7b4-2m9p4 labeled
+
+# 변경된 label 확인
+$ kubectl describe pods $POD_NAME
+Name:         kubernetes-bootcamp-765bf4c7b4-2m9p4
+Namespace:    default
+Priority:     0
+Node:         minikube/172.17.0.51
+Start Time:   Mon, 16 Nov 2020 01:50:37 +0000
+Labels:       app=v1
+              pod-template-hash=765bf4c7b4
+              run=kubernetes-bootcamp
+Annotations:  <none>
+Status:       Running
+IP:           172.18.0.4
+IPs:
+  IP:           172.18.0.4
+Controlled By:  ReplicaSet/kubernetes-bootcamp-765bf4c7b4
+Containers:
+  kubernetes-bootcamp:
+    Container ID:   docker://1e5a9b243194757edbb6790a8ed4a0382fc5c70efa4e210576b93f037e329cfa
+    Image:          gcr.io/google-samples/kubernetes-bootcamp:v1
+    Image ID:       docker-pullable://jocatalin/kubernetes-bootcamp@sha256:0d6b8ee63bb57c5f5b6156f446b3bc3b3c143d233037f3a2f00e279c8fcc64af
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Mon, 16 Nov 2020 01:50:40 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-j6m67 (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  default-token-j6m67:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-j6m67
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  17m (x2 over 17m)  default-scheduler  0/1 nodes are available: 1 node(s) had taints that the pod didn't tolerate.
+  Normal   Scheduled         16m                default-scheduler  Successfully assigned default/kubernetes-bootcamp-765bf4c7b4-2m9p4 to minikube
+  Normal   Pulled            16m                kubelet, minikube  Container image "gcr.io/google-samples/kubernetes-bootcamp:v1" already present on machine
+  Normal   Created           16m                kubelet, minikube  Created container kubernetes-bootcamp
+  Normal   Started           16m                kubelet, minikube  Started container kubernetes-bootcamp
+
+# 변경한 label로 파드 검색
+$ kubectl get pods -l app=v1
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-765bf4c7b4-2m9p4   1/1     Running   0          18m
+
+# Step 3. Deleting a service
+
+# 명령어를 이용한 service 삭제
+$ kubectl delete service -l run=kubernetes-bootcamp
+service "kubernetes-bootcamp" deleted
+
+# 서비스 삭제 확인
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   20m
+
+# 라우트가 외부로 노출되고 있는지 확인
+$ curl $(minikube ip):$NODE_PORT
+curl: (7) Failed to connect to 172.17.0.51 port 30751: Connection refused
+
+# 어플리케이션이 아직 파드 안에서 작동하는지 확인
+$ kubectl exec -ti $POD_NAME curl localhost:8080
+Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-765bf4c7b4-2m9p4 | v=1
+
+```
+
+<br/>
+
+# 5. 앱 스케일링하기
+
+[복수의 앱 인스턴스를 구동하기](https://kubernetes.io/ko/docs/tutorials/kubernetes-basics/scale/scale-intro/)
+
+## 5. 복수의 앱 인스턴스를 구동하기
+
+### 목표
+
+- kubectl을 사용하여 애플리케이션을 스케일한다.
+
+### 스케일링 개요
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%204.png](k8s_04_tutorial_Module[1-6]_images/Untitled%204.png)
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%205.png](k8s_04_tutorial_Module[1-6]_images/Untitled%205.png)
+
+- 디플로이먼트를 스케일 아웃하면 신규 파드가 생성되어, 가용한 자원이 있는 노드에 스케줄된다.
+- 스케일링 기능은 변경된 desired state 까지 파드의 수를 늘린다.
+- 쿠버네티스는 파드의 오토스케일링도 지원하지만 본 모듈에서는 다루지 않으며, 0까지 스케일링도 가능
+- 애플리케이션의 인스턴스를 복수로 구동하게 될 경우, 트래픽을 해당 인스턴스 모두에 분산시켜야 한다.
+    - 서비스는 노출된 디플로이먼트의 모든 파드에 네트워크 트래픽을 분산시켜줄 통합된 로드밸런서를 갖으며, 서비스는 엔드포인트를 이용하여 구동 중인 파드를 지속적으로 모니터링함으로써 가용한 파드에만 트래픽이 전달되도록 함
+- 복수의 애플리케이션 인스턴스가 구동 중일 경우 다운타임 없이 롤링 업데이트를 진행할 수 있다.
+
+<br/>
+
+## 5. Module 5 - 앱 스케일링하기 (Scale up your app)
+
+- kubectl scale을 통해 디플로이먼트를 스케일링한다.
+- 스케일링을 통해 로드 밸런싱을 확인한다.
+
+```python
+Kubernetes Bootcamp Terminal
+
+$ sleep 1; launch.sh
+Starting Kubernetes. This is expected to take less than a minute
+Kubernetes Started
+
+# Step 1. Scaling a deployment
+
+# Deployments 확인
+$ kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   1/1     1            1           2m17s
+
+# Deployment에 의해 생성된 ReplicaSet 확인
+# ReplicaSet 이름은 항상 다음 형식을 따름 > [DEPLOYMENT-NAME]-[RANDOM-STRING]
+$ kubectl get rs
+NAME                             DESIRED   CURRENT   READY   AGE
+kubernetes-bootcamp-765bf4c7b4   1         1         1       4m42s
+
+# Scale 작업
+$ kubectl scale deployments/kubernetes-bootcamp --replicas=4
+deployment.apps/kubernetes-bootcamp scaled
+
+# Scale 된 deployment 확인
+$ kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   4/4     4            4           7m54s
+
+# 변경된 파드 정보 확인 // 각각의 파드들이 다른 IP를 갖고 있는 것 확인
+$ kubectl get pods -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE     IP   NODE       NOMINATED NODE   READINESS GATES
+kubernetes-bootcamp-765bf4c7b4-8t74g   1/1     Running   0          65s     172.18.0.9   minikube   <none>           <none>
+kubernetes-bootcamp-765bf4c7b4-8tjjz   1/1     Running   0          65s     172.18.0.7   minikube   <none>           <none>
+kubernetes-bootcamp-765bf4c7b4-fgw5d   1/1     Running   0          8m25s   172.18.0.2   minikube   <none>           <none>
+kubernetes-bootcamp-765bf4c7b4-h5f7m   1/1     Running   0          65s     172.18.0.8   minikube   <none>           <none>
+
+# 변경 사항은 deployment event log에서 확인 가능
+$ kubectl describe deployments/kubernetes-bootcamp
+Name:                   kubernetes-bootcamp
+Namespace:              default
+CreationTimestamp:      Mon, 16 Nov 2020 05:30:43 +0000
+Labels:                 run=kubernetes-bootcamp
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               run=kubernetes-bootcamp
+Replicas:               4 desired | 4 updated | 4 total | 4 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  run=kubernetes-bootcamp
+  Containers:
+   kubernetes-bootcamp:
+    Image:        gcr.io/google-samples/kubernetes-bootcamp:v1
+    Port:         8080/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   kubernetes-bootcamp-765bf4c7b4 (4/4 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  10m    deployment-controller  Scaled up replica set kubernetes-bootcamp-765bf4c7b4 to 1
+  Normal  ScalingReplicaSet  2m42s  deployment-controller  Scaled up replica set kubernetes-bootcamp-765bf4c7b4 to 4
+
+# Step 2. Load Balancing
+
+# 로드 밸런싱 되고 있는지 확인 > describe 명령어 > 외부로 노출된 IP와 포트가 있는지 확인
+$ kubectl describe services/kubernetes-bootcamp
+Name:                     kubernetes-bootcamp
+Namespace:                default
+Labels:                   run=kubernetes-bootcamp
+Annotations:              <none>
+Selector:                 run=kubernetes-bootcamp
+Type:                     NodePort
+IP:                       10.97.100.200
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+NodePort:                 <unset>  32050/TCP
+Endpoints:                172.18.0.2:8080,172.18.0.7:8080,172.18.0.8:8080 + 1 more...
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+# NODE_PORT 변수 설정
+$ export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+
+$ echo NODE_PORT=$NODE_PORT
+NODE_PORT=32050
+
+# curl 명령어를 통한 IP와 포트 노출 확인
+$ curl $(minikube ip):$NODE_PORT
+Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-765bf4c7b4-8tjjz | v=1
+
+# Step 3. Scale Down
+
+# 기존 4개에서 2개로 Scale down 작업 진행
+$ kubectl scale deployments/kubernetes-bootcamp --replicas=2
+deployment.apps/kubernetes-bootcamp scaled
+
+# 변경 사항 확인 (Deployments)
+$ kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   2/2     2            2           21m
+
+# 변경 사항 확인 (Pods)
+$ kubectl get pods -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE   IP NODE       NOMINATED NODE   READINESS GATES
+kubernetes-bootcamp-765bf4c7b4-fgw5d   1/1     Running   0          21m   172.18.0.2 minikube   <none>           <none>
+kubernetes-bootcamp-765bf4c7b4-h5f7m   1/1     Running   0          14m   172.18.0.8 minikube   <none>           <none>
+
+```
+
+<br/>
+
+# 6. 앱 업데이트 하기
+
+## 6. 롤링 업데이트 수행하기
+
+### 목표
+
+- kubectl을 이용하여 롤링 업데이트 수행하기
+
+### 애플리케이션 업데이트하기
+
+- 사용자들은 애플리케이션이 항상 사용 가능한 상태일 것이라 생각
+- 개발자들은 하루에도 여러번씩 새로운 버전을 배포하도록 요구 받음
+- 쿠버네테스에서는 이러한 상황에 롤링 업데이트를 적용
+
+롤링 업데이트
+
+- 롤링 업데이트는 파드 인스턴스를 점진적으로 새로운 버전으로 업데이트하여 디플로이먼트 업데이트를 서비스 중단 없이 이루어질 수 있도록 함
+- 새로운 파드는 가용한 자원을 보유한 노드로 스케줄
+- 업데이트는 버전으로 관리되고 어떠한 디플로이먼트 업데이트라도 이전 버전으로 원복 가능
+
+### 롤링 업데이트 개요
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%206.png](k8s_04_tutorial_Module[1-6]_images/Untitled%206.png)
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%207.png](k8s_04_tutorial_Module[1-6]_images/Untitled%207.png)
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%208.png](k8s_04_tutorial_Module[1-6]_images/Untitled%208.png)
+
+![k8s_04_tutorial_Module[1-6]_images/Untitled%209.png](k8s_04_tutorial_Module[1-6]_images/Untitled%209.png)
+
+- 애플리케이션 스케일링과 유사하게 디플로이먼트가 외부로 노출되면 서비스는 업데이트가 이루어지는 동안 사용 가능한 파드에게만 트래픽을 로드 밸런싱
+- 롤링 업데이트는 다음 동작들을 허용
+    - 하나의 환경에서 또 다른 환경으로의 애플리케이션 프로모션 (컨테이너 이미지 업데이트)
+    - 이전 버전으로 롤백
+    - 서비스 중단 없는 애플리케이션의 지속적인 통합과 지속적인 전달 (CI/CD)
+
+<br/>
+
+## 6. Module 6 - 앱 업데이트 하기 (Update your app)
+
+- kubectl set image를 통한 deployed application 업데이트
+- rollout undo 명령어를 통한 롤백
+
+```python
+Kubernetes Bootcamp Terminal
+
+$ sleep 1; launch.sh
+Starting Kubernetes. This is expected to take less than a minute
+Kubernetes Started
+
+# Step 1. Update the version of the app
+
+# Deployments 리스트
+$ kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   4/4     4            4           103s
+
+# Pods 리스트
+$ kubectl get pods
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-765bf4c7b4-7qv2s   1/1     Running   0          111s
+kubernetes-bootcamp-765bf4c7b4-mwgkh   1/1     Running   0          111s
+kubernetes-bootcamp-765bf4c7b4-n9chf   1/1     Running   0          111s
+kubernetes-bootcamp-765bf4c7b4-rs6vr   1/1     Running   0          111s
+
+# 현재 어플리케이션의 이미지 버전 확인
+
+$ kubectl describe pods    # 4개의 파드 정보가 출력되며  Image 필드에서 확인 가능
+
+# set image 명령어를 이용한 이미지 업데이트
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+deployment.apps/kubernetes-bootcamp image updated   
+
+# Pods 확인
+$ kubectl get pods
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-7d6f8694b6-2rnnl   1/1     Running   0          54s
+kubernetes-bootcamp-7d6f8694b6-mhpm5   1/1     Running   0          52s
+kubernetes-bootcamp-7d6f8694b6-mncfw   1/1     Running   0          54s
+kubernetes-bootcamp-7d6f8694b6-vldxw   1/1     Running   0          52s
+
+# Step 2. Verify an update
+
+# 구동 중인 어플리케이션 확인
+$ kubectl describe services/kubernetes-bootcamp
+Name:                     kubernetes-bootcamp
+Namespace:                default
+Labels:                   run=kubernetes-bootcamp
+Annotations:              <none>
+Selector:                 run=kubernetes-bootcamp
+Type:                     NodePort
+IP:                       10.100.228.118
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+NodePort:                 <unset>  30923/TCP
+Endpoints:                172.18.0.10:8080,172.18.0.11:8080,172.18.0.12:8080 + 1 more...
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+# NODE_PORT 변수 생성 및 할당
+$ export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+
+$ echo NODE_PORT=$NODE_PORT
+NODE_PORT=30923
+
+# curl 명령어를 이용한 IP, Port 노출
+$ curl $(minikube ip):$NODE_PORT
+Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-7d6f8694b6-mhpm5 | v=2
+
+# 이미지 업데이트 확인
+$ kubectl rollout status deployments/kubernetes-bootcamp
+deployment "kubernetes-bootcamp" successfully rolled out
+
+# 현재 이미지의 버전 확인
+$ kubectl describe pods    # 4개의 파드 정보 확인 가능 (ver2) 
+
+# Step 3. Rollback an update
+
+# v10 이미지 배포
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+deployment.apps/kubernetes-bootcamp image updated
+
+# 배포 상태 확인
+$ kubectl get deployments    # 문제가 발생했다는 것을 인지해야함 READY 3/4
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   3/4     2            3           14m
+
+# Pods 정보 확인
+$ kubectl get pods
+NAME                                   READY   STATUS             RESTARTS   AGE
+kubernetes-bootcamp-7d6f8694b6-2rnnl   1/1     Running            0          8m54s
+kubernetes-bootcamp-7d6f8694b6-mhpm5   1/1     Running            0          8m52s
+kubernetes-bootcamp-7d6f8694b6-mncfw   1/1     Running            0          8m54s
+kubernetes-bootcamp-886577c5d-4wrz2    0/1     ImagePullBackOff   0          82s
+kubernetes-bootcamp-886577c5d-qf2zm    0/1     ImagePullBackOff   0          82s
+
+# describe 명령어를 통한 상세 확인
+$ kubectl describe pods
+
+Events:
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  <unknown>           default-scheduler  Successfully assigned default/kubernetes-bootcamp-886577c5d-4wrz2 to minikube
+  Normal   Pulling    43s (x4 over 2m4s)  kubelet, minikube  Pulling image "gcr.io/google-samples/kubernetes-bootcamp:v10"
+  Warning  Failed     42s (x4 over 2m3s)  kubelet, minikube  Failed to pull image "gcr.io/google-samples/kubernetes-bootcamp:v10": rpc error: code = Unknown desc = Error response from daemon: manifest for gcr.io/google-samples/kubernetes-bootcamp:v10 not found: manifest unknown: Failed to fetch "v10" from request "/v2/google-samples/kubernetes-bootcamp/manifests/v10".
+  Warning  Failed     42s (x4 over 2m3s)  kubelet, minikube  Error: ErrImagePull
+  Warning  Failed     27s (x6 over 2m3s)  kubelet, minikube  Error: ImagePullBackOff
+  Normal   BackOff    13s (x7 over 2m3s)  kubelet, minikube  Back-off pulling image "gcr.io/google-samples/kubernetes-bootcamp:v10"
+# Repository에 v10 이미지가 존재하지 않아서 에러 발생
+
+# rollout undo 명령어를 통한 롤백 진행
+# known state 라면 어디로든 롤백 가능
+$ kubectl rollout undo deployments/kubernetes-bootcamp
+deployment.apps/kubernetes-bootcamp rolled back
+
+# Pods 정보 확인
+$ kubectl get pods
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-7d6f8694b6-2rnnl   1/1     Running   0          13m
+kubernetes-bootcamp-7d6f8694b6-7bvlm   1/1     Running   0          63s
+kubernetes-bootcamp-7d6f8694b6-mhpm5   1/1     Running   0          13m
+kubernetes-bootcamp-7d6f8694b6-mncfw   1/1     Running   0          13m
+
+# describe 정보 확인, v2 로 롤백된 것을 확인 가능
+$ kubectl describe pods
+
+...
+Containers:
+  kubernetes-bootcamp:
+    Container ID:   docker://ead1643ef7547f3051430d68c57c3a50a0af2b4dba345372308a64532371c6bd
+    Image:          jocatalin/kubernetes-bootcamp:v2
+    Image ID:       docker-pullable://jocatalin/kubernetes-bootcamp@sha256:fb1a3ced00cecfc1f83f18ab5cd14199e30adc1b49aa4244f5d65ad3f5feb2a5
+...
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  13m   default-scheduler  Successfully assigned default/kubernetes-bootcamp-7d6f8694b6-mncfw to minikube
+  Normal  Pulled     13m   kubelet, minikube  Container image "jocatalin/kubernetes-bootcamp:v2" already present on machine
+  Normal  Created    13m   kubelet, minikube  Created container kubernetes-bootcamp
+  Normal  Started    13m   kubelet, minikube  Started container kubernetes-bootcamp
+...
+```
