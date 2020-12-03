@@ -1,5 +1,3 @@
-# Run Command HOL
-
 ---
 
 **2020.07. MEGAZONE CLOUD. SA 정재환**
